@@ -1,0 +1,29 @@
+
+---
+- name: Deploy Node.js App
+  hosts: all  
+  become: yes
+
+  tasks:
+    - name: Install NGINX
+      apt:
+        name: nginx
+        state: present
+
+    - name: Copy Node.js app files
+      copy:
+        src: /home/ubuntu/web_app
+        dest: /var/www/web_app
+
+    - name: Configure NGINX
+      template:
+        src: nginx.conf
+        dest: /etc/nginx/sites-available/my-app
+      notify:
+        - Reload NGINX
+
+  handlers:
+    - name: Reload NGINX
+      service:
+        name: nginx
+        state: reloaded
